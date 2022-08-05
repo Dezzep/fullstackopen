@@ -1,16 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Filter from './components/Filter'
 import Numbers from './components/Numbers'
 import Form from './components/Form'
+import axios from 'axios'
 
 const App = () => {
-  const [persons, setPersons] = useState([
-    { name: 'Arto Hellas', number:'555-123-1234' },
-    { name: 'Toro Hellaaaas', number:'55345-12-1234' },
-    { name: 'Boroo Belldas', number:'51255-121253-1125234' }
-
-
-  ]) 
+  const [persons, setPersons] = useState([]) 
   const [newName, setNewName] = useState('')
   const [newNumber, setNewNumber] = useState('')
   const [filterValue, setFilterValue] = useState('')
@@ -43,6 +38,15 @@ const App = () => {
   const handleFilterChange = (e) => {
     setFilterValue(e.target.value)
   }
+
+  useEffect(() => {
+    axios 
+      .get('http://localhost:3001/persons')
+      .then(response => {
+        setPersons(response.data)
+      })
+  }, [])
+  console.log(persons.length);
 
   return (
     <div>
