@@ -20,6 +20,8 @@ const App = () => {
   };
 
   const displayMessage = (msg, error) => {
+    setMessage(null);
+    setErrorMessage(null);
     if (!error) {
       setMessage(msg);
       setTimeout(() => {
@@ -53,19 +55,28 @@ const App = () => {
     }
   };
   const addNewPerson = () => {
+    if (newName.length < 1 || newNumber.length < 1) {
+      return displayMessage("Please put a name and number.", true);
+    }
     const personObject = {
       name: newName,
       number: newNumber,
-      date: new Date().toISOString(),
     };
-    peopleService.create(personObject).then((personData) => {
-      setPersons(persons.concat(personData));
-    });
+    peopleService
+      .create(personObject, displayMessage)
+      .then((personData) => {
+        updatePeople();
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+
     displayMessage(`${newName} has been added to the phonebook.`);
 
     setNewName("");
     setNewNumber("");
   };
+
   const buttonClick = (e) => {
     e.preventDefault();
     let duplicate = false;
@@ -80,8 +91,8 @@ const App = () => {
   const deleteButtonClick = (id, name) => {
     if (window.confirm(`do you want to delete: ${name}`)) {
       const x = peopleService.remove(id);
-        x.then(() => updatePeople());
-    } 
+      x.then(() => updatePeople());
+    }
   };
 
   const handleNameChange = (e) => {

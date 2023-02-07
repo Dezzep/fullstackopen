@@ -1,5 +1,5 @@
 const Numbers = ({ persons, filterValue, deleteButtonClick }) => {
-  const filtered = persons.filter((person) =>
+  let filtered = persons.filter((person) =>
     person.name.toLowerCase().includes(filterValue.toLowerCase())
   );
 

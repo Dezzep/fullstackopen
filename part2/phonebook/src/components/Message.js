@@ -9,7 +9,7 @@ const Message = ({ msg, error }) => {
           marginTop: 6,
           fontSize: 24,
           color: "red",
-          backgroundColor: "grey",
+          backgroundColor: "#3f3f3f3f",
           fontStyle: "bold",
         }}
       >
