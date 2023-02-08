@@ -5,25 +5,28 @@ import LoginForm from './components/LoginForm';
 import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
+import { initializeBlogs, createBlog } from './reducers/blogReducer';
+import { useDispatch, useSelector } from 'react-redux';
+import { setNotification } from './reducers/notificationReducer';
+import Notification from './components/Notification';
 
 const App = () => {
-  const [blogs, setBlogs] = useState([]);
+  const state = useSelector((state) => state);
+  console.log(state.blogs);
+  const blogs = state.blogs;
   const [user, setUser] = useState(null);
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [message, setMessage] = useState(null);
 
+  console.log(state.notification.value);
   const blogFormRef = useRef();
+
+  const dispatch = useDispatch();
+  useEffect(() => {
+    dispatch(initializeBlogs());
+  }, [dispatch]);
 
   const logOut = () => {
     setUser(null);
     localStorage.removeItem('loggedBloglistUser');
-  };
-
-  const getSetAndSort = async () => {
-    // get all blogs sort them by most likes, then set them to state as an array (of objects).
-    const allBlogs = await blogService.getAll();
-    await allBlogs.sort((a, b) => a.likes - b.likes).reverse(); //most likes is displayed first.
-    setBlogs(allBlogs);
   };
 
   const loginFormSubmit = async (event, username, password) => {
@@ -40,42 +43,31 @@ const App = () => {
 
       return 1;
     } catch (exception) {
-      setErrorMessage('Wrong Username or Password');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      // dispatch(setNotification('Wrong Username or Password', 5));
+      dispatch(setNotification('Wrong Username or password', 5, 'error'));
     }
   };
 
   const blogSubmitHandler = async (e, title, author, url) => {
     e.preventDefault();
     if (title.length < 3 || url.length < 3) {
-      setErrorMessage('URL or TITLE invalid');
-      setTimeout(() => {
-        setErrorMessage(null);
-      }, 5000);
+      dispatch(setNotification('URL or TITLE invalid', 5, 'error'));
     } else {
       try {
-        await blogService.create({ title, author, url });
-        getSetAndSort();
+        dispatch(createBlog({ title, author, url }));
+        dispatch(setNotification(`Blog ${title} has been created`, 5));
         blogFormRef.current.toggleVisibility();
-        setMessage(`${title} by ${author} has been added`);
-        setTimeout(() => {
-          setMessage(null);
-        }, 5000);
       } catch (exception) {
-        setErrorMessage('please fill out required forms');
-        setTimeout(() => {
-          setErrorMessage(null);
-        }, 5000);
+        dispatch(setNotification('Please fill out required forms', 5, 'error'));
       }
     }
   };
 
   const addLikes = async (id, title, author, url, likes, user) => {
+    dispatch(setNotification(`you voted ${title}`, 5));
+
     try {
       await blogService.update(id, { title, author, url, likes, user });
-      getSetAndSort();
     } catch (exception) {
       console.log('error adding like');
     }
@@ -85,16 +77,13 @@ const App = () => {
     if (window.confirm('do you really want to delete this?')) {
       try {
         await blogService.remove(id);
-        getSetAndSort();
-      } catch {
-        setErrorMessage('you do not have permission to delete this blog.');
+      } catch (error) {
+        dispatch(setNotification('Wrong Username or password', 5, 'error'));
       }
     }
   };
 
-  useEffect(() => {
-    getSetAndSort();
-  }, []);
+  useEffect(() => {}, []);
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser');
     if (loggedUserJSON) {
@@ -108,8 +97,7 @@ const App = () => {
     return (
       <div>
         <LoginForm loginFormSubmit={loginFormSubmit} user={user} />
-
-        <h3 style={{ color: 'red' }}>{errorMessage}</h3>
+        <h3 style={{ color: 'red' }}>{state.notification.value}</h3>
       </div>
     );
   }
@@ -122,11 +110,8 @@ const App = () => {
       <Togglable buttonLabel={'new blog'} ref={blogFormRef}>
         <h2>create new</h2>
         <BlogForm user={user} blogSubmitHandler={blogSubmitHandler} />
-        <h3 style={{ color: 'red', backgroundColor: '#3f3f3f' }}>
-          {errorMessage}
-        </h3>
       </Togglable>
-      <h3 style={{ backgroundColor: 'green' }}>{message}</h3>
+      <Notification />
 
       <h2>blogs</h2>
       {blogs.map((blog, i) => (
