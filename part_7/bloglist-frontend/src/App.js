@@ -5,18 +5,21 @@ import LoginForm from './components/LoginForm';
 import loginService from './services/login';
 import BlogForm from './components/BlogForm';
 import Togglable from './components/Togglable';
-import { initializeBlogs, createBlog } from './reducers/blogReducer';
+import {
+  initializeBlogs,
+  createBlog,
+  voteFor,
+  removeBlog,
+} from './reducers/blogReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNotification } from './reducers/notificationReducer';
 import Notification from './components/Notification';
 
 const App = () => {
   const state = useSelector((state) => state);
-  console.log(state.blogs);
   const blogs = state.blogs;
   const [user, setUser] = useState(null);
 
-  console.log(state.notification.value);
   const blogFormRef = useRef();
 
   const dispatch = useDispatch();
@@ -67,7 +70,7 @@ const App = () => {
     dispatch(setNotification(`you voted ${title}`, 5));
 
     try {
-      await blogService.update(id, { title, author, url, likes, user });
+      dispatch(voteFor(id, { title, author, url, likes, user }));
     } catch (exception) {
       console.log('error adding like');
     }
@@ -75,10 +78,12 @@ const App = () => {
 
   const deleteBlog = async (id) => {
     if (window.confirm('do you really want to delete this?')) {
+      dispatch(setNotification('Blog deleted', 5, 'error'));
+      console.log(id);
       try {
-        await blogService.remove(id);
+        dispatch(removeBlog(id));
       } catch (error) {
-        dispatch(setNotification('Wrong Username or password', 5, 'error'));
+        dispatch(setNotification('Error deleting', 5, 'error'));
       }
     }
   };
