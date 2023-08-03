@@ -1,9 +1,10 @@
 import { useState, useEffect, useRef } from 'react';
-// import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './components/Home';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import loginService from './services/login';
+import Users from './components/Users';
 import {
   initializeBlogs,
   createBlog,
@@ -108,16 +109,30 @@ const App = () => {
     );
   }
   return (
-    <Home
-      user={user}
-      blogFormRef={blogFormRef}
-      logOut={logOut}
-      blogs={blogs}
-      addLikes={addLikes}
-      deleteBlog={deleteBlog}
-      blogSubmitHandler={blogSubmitHandler}
-      state={state}
-    />
+    <Router>
+      <div>
+        <Link to="/">home</Link>
+        <Link to="users">users</Link>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <Home
+                user={user}
+                blogFormRef={blogFormRef}
+                logOut={logOut}
+                blogs={blogs}
+                addLikes={addLikes}
+                deleteBlog={deleteBlog}
+                blogSubmitHandler={blogSubmitHandler}
+                state={state}
+              />
+            }
+          ></Route>
+          <Route path="/users" element={<Users />}></Route>
+        </Routes>
+      </div>
+    </Router>
   );
 };
 
