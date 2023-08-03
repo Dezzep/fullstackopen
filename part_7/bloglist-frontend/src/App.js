@@ -1,20 +1,18 @@
 import { useState, useEffect, useRef } from 'react';
-import Blog from './components/Blog';
+// import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import Home from './components/Home';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import loginService from './services/login';
-import BlogForm from './components/BlogForm';
-import Togglable from './components/Togglable';
 import {
   initializeBlogs,
   createBlog,
   voteFor,
   removeBlog,
 } from './reducers/blogReducer';
-import { determineUser } from './reducers/userReducer';
+import { determineUser, getAllUsers } from './reducers/userReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNotification } from './reducers/notificationReducer';
-import Notification from './components/Notification';
 
 const App = () => {
   const state = useSelector((state) => state);
@@ -26,6 +24,7 @@ const App = () => {
   const dispatch = useDispatch();
   useEffect(() => {
     dispatch(initializeBlogs());
+    dispatch(getAllUsers());
   }, [dispatch]);
 
   const logOut = () => {
@@ -109,30 +108,16 @@ const App = () => {
     );
   }
   return (
-    <div>
-      <h2>blogs</h2>
-      <div>
-        {user.name} logged in <button onClick={logOut}>Log Out</button>
-      </div>
-      <Togglable buttonLabel={'new blog'} ref={blogFormRef}>
-        <h2>create new</h2>
-        <BlogForm user={user} blogSubmitHandler={blogSubmitHandler} />
-      </Togglable>
-      <Notification />
-
-      <h2>blogs</h2>
-      {blogs.map((blog, i) => (
-        <Blog
-          key={blog.id}
-          viewId={`viewId${i}`}
-          likeId={`likeId${i}`}
-          deleteId={`deleteblog${i}`}
-          blog={blog}
-          addLikes={addLikes}
-          deleteBlog={deleteBlog}
-        />
-      ))}
-    </div>
+    <Home
+      user={user}
+      blogFormRef={blogFormRef}
+      logOut={logOut}
+      blogs={blogs}
+      addLikes={addLikes}
+      deleteBlog={deleteBlog}
+      blogSubmitHandler={blogSubmitHandler}
+      state={state}
+    />
   );
 };
 

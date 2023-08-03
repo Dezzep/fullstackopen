@@ -1,14 +1,17 @@
 import { createSlice } from '@reduxjs/toolkit';
+import userService from '../services/users';
 
 const userSlice = createSlice({
   name: 'user',
   initialState: { users: [], signedInUser: {} },
   reducers: {
-    setUsers(state, action) {
+    setAllUsers(state, action) {
       state.users = action.payload
         .sort((a, b) => a.blogs.length - b.blogs.length)
         .reverse();
-      return state.users;
+      // return action.payload.sort((a, b) => a.likes - b.likes).reverse();
+
+      return state;
     },
     setCurrentUser: (state, action) => {
       state.signedInUser = action.payload;
@@ -17,7 +20,15 @@ const userSlice = createSlice({
   },
 });
 
-export const { setUsers, setCurrentUser } = userSlice.actions;
+export const { setAllUsers, setCurrentUser } = userSlice.actions;
+
+export const getAllUsers = () => {
+  return async (dispatch) => {
+    const users = await userService.getAll();
+    console.log(users);
+    dispatch(setAllUsers(users));
+  };
+};
 
 export const determineUser = (user) => {
   return async (dispatch) => {
