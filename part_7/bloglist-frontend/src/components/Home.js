@@ -3,12 +3,10 @@ import BlogForm from './BlogForm';
 import Notification from './Notification';
 import Blog from './Blog';
 import LoginForm from './LoginForm';
-import LoginInfo from './LoginInfo';
 
 const Home = ({
   user,
   blogFormRef,
-  logOut,
   blogs,
   addLikes,
   deleteBlog,
@@ -27,9 +25,7 @@ const Home = ({
   return (
     <div>
       <h2>blogs</h2>
-      <div>
-        <LoginInfo logOut={logOut} user={user} />
-      </div>
+      <div></div>
       <Togglable buttonLabel={'new blog'} ref={blogFormRef}>
         <h2>create new</h2>
         <BlogForm user={user} blogSubmitHandler={blogSubmitHandler} />

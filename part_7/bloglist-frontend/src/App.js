@@ -4,6 +4,9 @@ import Home from './components/Home';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import loginService from './services/login';
+import LoginInfo from './components/LoginInfo';
+import User from './components/User';
+
 import Users from './components/Users';
 import {
   initializeBlogs,
@@ -113,14 +116,17 @@ const App = () => {
       <div>
         <Link to="/">home</Link>
         <Link to="users">users</Link>
+        <LoginInfo logOut={logOut} user={user} />
+
         <Routes>
+          <Route path="/users" element={<Users />} />
+          <Route path="/users/:id" element={<User />} />
           <Route
             path="/"
             element={
               <Home
                 user={user}
                 blogFormRef={blogFormRef}
-                logOut={logOut}
                 blogs={blogs}
                 addLikes={addLikes}
                 deleteBlog={deleteBlog}
@@ -129,7 +135,6 @@ const App = () => {
               />
             }
           ></Route>
-          <Route path="/users" element={<Users />}></Route>
         </Routes>
       </div>
     </Router>

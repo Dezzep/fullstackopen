@@ -1,17 +1,22 @@
 import { useSelector } from 'react-redux';
+import { Link } from 'react-router-dom';
 
 const UserDisplay = ({ user }) => {
   return (
     <div
       style={{
         display: 'flex',
-        gap: '8px',
-        justifyContent: 'space-between',
-        width: '150px',
+        height: '50px',
+        justifyContent: 'space-evenly',
+        alignItems: 'center',
+        gap: '36px',
       }}
     >
-      <p>{user.name}</p>
-      <p>{user.blogs.length}</p>
+      <div>
+        {' '}
+        <Link to={`/users/${user.id}`}>{user.name}</Link>
+      </div>
+      <p style={{ marginLeft: 'auto' }}>{user.blogs.length}</p>
     </div>
   );
 };
