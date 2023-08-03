@@ -1,12 +1,12 @@
 import { useState, useEffect, useRef } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Home from './components/Home';
 import Blog from './components/Blog';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import loginService from './services/login';
-import LoginInfo from './components/LoginInfo';
 import User from './components/User';
+import Nav from './components/Nav';
 
 import Users from './components/Users';
 import { initializeBlogs, createBlog } from './reducers/blogReducer';
@@ -88,12 +88,8 @@ const App = () => {
   }
   return (
     <Router>
+      <Nav logOut={logOut} user={user} />
       <div>
-        <Link to="/">home</Link>
-        <Link to="users">users</Link>
-
-        <LoginInfo logOut={logOut} user={user} />
-
         <Routes>
           <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<User />} />
