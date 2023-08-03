@@ -1,19 +1,26 @@
 import Togglable from './Togglable';
 import BlogForm from './BlogForm';
 import Notification from './Notification';
-import Blog from './Blog';
 import LoginForm from './LoginForm';
+import { Link } from 'react-router-dom';
 
 const Home = ({
   user,
   blogFormRef,
   blogs,
-  addLikes,
-  deleteBlog,
+  // addLikes,
+  // deleteBlog,
   blogSubmitHandler,
   loginFormSubmit,
   state,
 }) => {
+  const blogStyle = {
+    paddingTop: 10,
+    paddingLeft: 2,
+    border: 'solid',
+    borderWidth: 1,
+    marginBottom: 5,
+  };
   if (!user) {
     return (
       <div>
@@ -24,8 +31,6 @@ const Home = ({
   }
   return (
     <div>
-      <h2>blogs</h2>
-      <div></div>
       <Togglable buttonLabel={'new blog'} ref={blogFormRef}>
         <h2>create new</h2>
         <BlogForm user={user} blogSubmitHandler={blogSubmitHandler} />
@@ -33,16 +38,13 @@ const Home = ({
       <Notification />
 
       <h2>blogs</h2>
-      {blogs.map((blog, i) => (
-        <Blog
-          key={blog.id}
-          viewId={`viewId${i}`}
-          likeId={`likeId${i}`}
-          deleteId={`deleteblog${i}`}
-          blog={blog}
-          addLikes={addLikes}
-          deleteBlog={deleteBlog}
-        />
+
+      {blogs.map((blog) => (
+        <div key={blog.id} style={blogStyle}>
+          <Link to={`/blog/${blog.id}`}>
+            {blog.title} --- {blog.author}
+          </Link>
+        </div>
       ))}
     </div>
   );

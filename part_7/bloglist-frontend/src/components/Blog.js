@@ -1,62 +1,56 @@
-import { useState } from 'react';
-const Blog = ({ blog, addLikes, deleteBlog, viewId, likeId }) => {
-  const [details, setDetails] = useState(false);
+import { useSelector, useDispatch } from 'react-redux';
+import { useParams, useNavigate } from 'react-router-dom';
+import { voteFor, removeBlog } from '../reducers/blogReducer';
+import { setNotification } from '../reducers/notificationReducer';
+const Blog = () => {
+  const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const addLikes = async (id, title, author, url, likes, user) => {
+    dispatch(setNotification(`you voted ${title}`, 5));
 
-  const hideDetails = { display: details ? 'none' : '' };
-  const showDetails = { display: details ? '' : 'none' };
-
-  const toggleDetails = () => {
-    setDetails(!details);
+    try {
+      dispatch(voteFor(id, { title, author, url, likes, user }));
+    } catch (exception) {
+      console.log('error adding like');
+    }
   };
-
-  const blogStyle = {
-    paddingTop: 10,
-    paddingLeft: 2,
-    border: 'solid',
-    borderWidth: 1,
-    marginBottom: 5,
+  const deleteBlog = async (id) => {
+    if (window.confirm('do you really want to delete this?')) {
+      dispatch(setNotification('Blog deleted', 5, 'error'));
+      navigate('/');
+      try {
+        dispatch(removeBlog(id));
+      } catch (error) {
+        dispatch(setNotification('Error deleting', 5, 'error'));
+      }
+    }
   };
+  const id = useParams().id;
+  const blogs = useSelector((state) => state.blogs);
+  const blog = blogs.find((b) => b.id === id);
 
+  if (!blog) return null;
   return (
-    <div style={blogStyle} className="blog">
-      <div style={hideDetails}>
-        {blog.title} - {blog.author}{' '}
-        <button id={viewId} onClick={toggleDetails}>
-          view
-        </button>
-      </div>
-      <div style={showDetails}>
-        <div>
-          {blog.title} <button onClick={toggleDetails}>hide</button>
-        </div>
-        <p>{blog.url}</p>
-        <div>
-          <p className="likeCount">{blog.likes}</p>{' '}
-          <button
-            id={likeId}
-            className="like"
-            onClick={() =>
-              addLikes(
-                blog.id,
-                blog.title,
-                blog.author,
-                blog.url,
-                blog.likes + 1,
-                blog.user.id
-              )
-            }
-          >
-            like
-          </button>
-        </div>
-        <p>{blog.author}</p>
-      </div>
+    <div style={{ display: 'flex', flexDirection: 'column' }}>
+      <h1>{blog.title} </h1>
+      <h2>author: {blog.author}</h2>
+      <a href={blog.url}>{blog.url}</a>
+      <p>current likes: {blog.likes}</p>
       <button
-        id={`${blog.title === 'susans cool new blog' ? 'deletethis' : null}`}
-        onClick={() => deleteBlog(blog.id)}
+        onClick={() =>
+          addLikes(
+            blog.id,
+            blog.title,
+            blog.author,
+            blog.url,
+            blog.likes + 1,
+            blog.user.id
+          )
+        }
       >
-        remove
+        Add Likes
       </button>
+      <button onClick={() => deleteBlog(blog.id)}>Delete Blog</button>
     </div>
   );
 };

@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import Home from './components/Home';
+import Blog from './components/Blog';
 import blogService from './services/blogs';
 import LoginForm from './components/LoginForm';
 import loginService from './services/login';
@@ -8,12 +9,7 @@ import LoginInfo from './components/LoginInfo';
 import User from './components/User';
 
 import Users from './components/Users';
-import {
-  initializeBlogs,
-  createBlog,
-  voteFor,
-  removeBlog,
-} from './reducers/blogReducer';
+import { initializeBlogs, createBlog } from './reducers/blogReducer';
 import { determineUser, getAllUsers } from './reducers/userReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNotification } from './reducers/notificationReducer';
@@ -72,27 +68,6 @@ const App = () => {
     }
   };
 
-  const addLikes = async (id, title, author, url, likes, user) => {
-    dispatch(setNotification(`you voted ${title}`, 5));
-
-    try {
-      dispatch(voteFor(id, { title, author, url, likes, user }));
-    } catch (exception) {
-      console.log('error adding like');
-    }
-  };
-
-  const deleteBlog = async (id) => {
-    if (window.confirm('do you really want to delete this?')) {
-      dispatch(setNotification('Blog deleted', 5, 'error'));
-      try {
-        dispatch(removeBlog(id));
-      } catch (error) {
-        dispatch(setNotification('Error deleting', 5, 'error'));
-      }
-    }
-  };
-
   useEffect(() => {}, []);
   useEffect(() => {
     const loggedUserJSON = window.localStorage.getItem('loggedBloglistUser');
@@ -116,11 +91,13 @@ const App = () => {
       <div>
         <Link to="/">home</Link>
         <Link to="users">users</Link>
+
         <LoginInfo logOut={logOut} user={user} />
 
         <Routes>
           <Route path="/users" element={<Users />} />
           <Route path="/users/:id" element={<User />} />
+          <Route path="/blog/:id" element={<Blog />} />
           <Route
             path="/"
             element={
@@ -128,8 +105,6 @@ const App = () => {
                 user={user}
                 blogFormRef={blogFormRef}
                 blogs={blogs}
-                addLikes={addLikes}
-                deleteBlog={deleteBlog}
                 blogSubmitHandler={blogSubmitHandler}
                 state={state}
               />

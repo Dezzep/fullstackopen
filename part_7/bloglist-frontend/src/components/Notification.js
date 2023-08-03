@@ -3,10 +3,6 @@ import { useSelector } from 'react-redux';
 const Notification = () => {
   const notification = useSelector((state) => state.notification);
   let style;
-  console.log(notification.error);
-  console.log(notification.error);
-
-  console.log(notification.error);
 
   if (notification.error) {
     style = {
