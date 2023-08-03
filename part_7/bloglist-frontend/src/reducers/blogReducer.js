@@ -35,13 +35,12 @@ export const initializeBlogs = () => {
 };
 export const voteFor = (id, content) => {
   return async (dispatch) => {
-    console.log('id is ', id);
-    console.log('user is ', content.user);
-
     const blogToIncrement = { id, ...content };
     await blogService.update(id, blogToIncrement);
 
     dispatch(voteUpdate(blogToIncrement));
+    const posts = await blogService.getAll();
+    dispatch(setBlogs(posts));
   };
 };
 
@@ -54,7 +53,6 @@ export const createBlog = (content) => {
 
 export const removeBlog = (id) => {
   return async (dispatch) => {
-    console.log('was I ever here');
     await blogService.remove(id);
 
     dispatch(deleteBlog(id));

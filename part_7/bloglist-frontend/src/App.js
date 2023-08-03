@@ -11,6 +11,7 @@ import {
   voteFor,
   removeBlog,
 } from './reducers/blogReducer';
+import { determineUser } from './reducers/userReducer';
 import { useDispatch, useSelector } from 'react-redux';
 import { setNotification } from './reducers/notificationReducer';
 import Notification from './components/Notification';
@@ -29,6 +30,7 @@ const App = () => {
 
   const logOut = () => {
     setUser(null);
+    dispatch(determineUser(''));
     localStorage.removeItem('loggedBloglistUser');
   };
 
@@ -43,6 +45,7 @@ const App = () => {
       window.localStorage.setItem('loggedBloglistUser', JSON.stringify(user));
       blogService.setToken(user.token);
       setUser(user);
+      dispatch(determineUser(user));
 
       return 1;
     } catch (exception) {
@@ -79,7 +82,6 @@ const App = () => {
   const deleteBlog = async (id) => {
     if (window.confirm('do you really want to delete this?')) {
       dispatch(setNotification('Blog deleted', 5, 'error'));
-      console.log(id);
       try {
         dispatch(removeBlog(id));
       } catch (error) {
