@@ -1,17 +1,17 @@
 import { useSelector, useDispatch } from 'react-redux';
 import { useParams, useNavigate } from 'react-router-dom';
-import { voteFor, removeBlog } from '../reducers/blogReducer';
+import { update, removeBlog } from '../reducers/blogReducer';
 import { setNotification } from '../reducers/notificationReducer';
+import { useState } from 'react';
 const Blog = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const addLikes = async (id, title, author, url, likes, user) => {
-    dispatch(setNotification(`you voted ${title}`, 5));
-
+  const [comment, setComment] = useState('');
+  const updateBlog = async (id, title, author, url, likes, user, comments) => {
     try {
-      dispatch(voteFor(id, { title, author, url, likes, user }));
+      dispatch(update(id, { title, author, url, likes, user, comments }));
     } catch (exception) {
-      console.log('error adding like');
+      console.log('error');
     }
   };
   const deleteBlog = async (id) => {
@@ -29,28 +29,92 @@ const Blog = () => {
   const blogs = useSelector((state) => state.blogs);
   const blog = blogs.find((b) => b.id === id);
 
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const arrayOfComments = [...blog.comments];
+    arrayOfComments.push(comment);
+    if (comment.length >= 2) {
+      // const newComments = blog.comments.push(comment);
+      updateBlog(
+        blog.id,
+        blog.title,
+        blog.author,
+        blog.url,
+        blog.likes,
+        blog.user.id,
+        arrayOfComments
+      );
+
+      // setComment('');
+    }
+  };
+
+  const handleCommentChange = (e) => {
+    setComment(e.target.value);
+  };
+
   if (!blog) return null;
   return (
     <div style={{ display: 'flex', flexDirection: 'column' }}>
       <h1>{blog.title} </h1>
       <h2>author: {blog.author}</h2>
       <a href={blog.url}>{blog.url}</a>
-      <p>current likes: {blog.likes}</p>
-      <button
-        onClick={() =>
-          addLikes(
-            blog.id,
-            blog.title,
-            blog.author,
-            blog.url,
-            blog.likes + 1,
-            blog.user.id
-          )
-        }
+      <div
+        style={{ display: 'flex', marginBottom: '2em', alignContent: 'center' }}
       >
-        Add Likes
+        <p>{blog.likes} likes</p>{' '}
+        <button
+          style={{ height: '24px', marginTop: '12px', marginLeft: '6px' }}
+          onClick={() =>
+            updateBlog(
+              blog.id,
+              blog.title,
+              blog.author,
+              blog.url,
+              blog.likes + 1,
+              blog.user.id,
+              blog.comments
+            )
+          }
+        >
+          like
+        </button>{' '}
+      </div>
+
+      <div>
+        <h3>Comments</h3>
+        <form style={{ marginBottom: '4em' }}>
+          <input
+            value={comment}
+            onChange={handleCommentChange}
+            minLength={2}
+            type="text"
+          ></input>
+          <button onClick={handleSubmit}>Comment</button>
+        </form>
+        {blog.comments
+          .map((comment, i) => {
+            return (
+              <ul key={comment + i}>
+                {' '}
+                <li>{comment} </li>{' '}
+              </ul>
+            );
+          })
+          .reverse()}
+      </div>
+
+      <button
+        style={{
+          width: '12em',
+          background: 'red',
+          height: '2em',
+          fontSize: '1.2em',
+        }}
+        onClick={() => deleteBlog(blog.id)}
+      >
+        Delete Blog
       </button>
-      <button onClick={() => deleteBlog(blog.id)}>Delete Blog</button>
     </div>
   );
 };

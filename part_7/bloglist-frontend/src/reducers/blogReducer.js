@@ -8,7 +8,7 @@ const blogSlice = createSlice({
     appendBlog(state, action) {
       state.push(action.payload);
     },
-    voteUpdate(state, action) {
+    updateBlog(state, action) {
       const blogToIncrement = action.payload;
       return state.map((post) =>
         post.id !== blogToIncrement.id ? post : blogToIncrement
@@ -17,6 +17,7 @@ const blogSlice = createSlice({
     setBlogs(state, action) {
       return action.payload.sort((a, b) => a.likes - b.likes).reverse();
     },
+
     deleteBlog(state, action) {
       const id = action.payload;
       return state.filter((post) => post.id !== id);
@@ -24,7 +25,7 @@ const blogSlice = createSlice({
   },
 });
 
-export const { setBlogs, appendBlog, voteUpdate, deleteBlog } =
+export const { setBlogs, appendBlog, updateBlog, deleteBlog } =
   blogSlice.actions;
 
 export const initializeBlogs = () => {
@@ -33,12 +34,13 @@ export const initializeBlogs = () => {
     dispatch(setBlogs(posts));
   };
 };
-export const voteFor = (id, content) => {
+
+export const update = (id, content) => {
   return async (dispatch) => {
     const blogToIncrement = { id, ...content };
     await blogService.update(id, blogToIncrement);
 
-    dispatch(voteUpdate(blogToIncrement));
+    dispatch(updateBlog(blogToIncrement));
     const posts = await blogService.getAll();
     dispatch(setBlogs(posts));
   };

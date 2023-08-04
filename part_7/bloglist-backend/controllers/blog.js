@@ -29,6 +29,7 @@ blogRouter.post('/', async (request, response, next) => {
     date: new Date(),
     likes: body.likes,
     user: user._id,
+    comments: [],
   });
   const savedBlog = await blog.save();
   user.blogs = user.blogs.concat(savedBlog._id);
@@ -38,7 +39,6 @@ blogRouter.post('/', async (request, response, next) => {
 
 // DELETE FROM DB
 blogRouter.delete('/:id', async (request, response, next) => {
-  console.log(request.token);
   const decodedToken = jwt.verify(request.token, process.env.SECRET);
   if (!decodedToken.id) {
     return response
@@ -60,6 +60,7 @@ blogRouter.put('/:id', async (request, response) => {
     url: body.url,
     likes: body.likes,
     user: body.user,
+    comments: body.comments,
   };
   const toUpdate = await Blog.findByIdAndUpdate(request.params.id, blog, {
     new: true,
