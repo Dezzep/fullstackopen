@@ -30,7 +30,7 @@ const Home = ({
     );
   }
   return (
-    <div>
+    <div style={{ padding: '4em', background: 'orange' }}>
       <Togglable buttonLabel={'new blog'} ref={blogFormRef}>
         <h2>create new</h2>
         <BlogForm user={user} blogSubmitHandler={blogSubmitHandler} />

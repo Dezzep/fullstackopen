@@ -10,6 +10,8 @@ const UserDisplay = ({ user }) => {
         justifyContent: 'space-evenly',
         alignItems: 'center',
         gap: '36px',
+        padding: '1em',
+        background: 'orange',
       }}
     >
       <div>

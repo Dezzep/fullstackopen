@@ -55,10 +55,30 @@ const Blog = () => {
 
   if (!blog) return null;
   return (
-    <div style={{ display: 'flex', flexDirection: 'column' }}>
-      <h1>{blog.title} </h1>
+    <div
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        width: '20em',
+        background: 'rebeccaPurple',
+        justifyContent: 'center',
+        alignContent: 'center',
+        padding: '6em',
+        color: 'orange',
+      }}
+    >
+      <h1 style={{ color: 'blue', fontSize: '3em' }}>
+        <strong>{blog.title}</strong>
+      </h1>
       <h2>author: {blog.author}</h2>
-      <a href={blog.url}>{blog.url}</a>
+      <div style={{ display: 'flex', gap: '1em' }}>
+        <p>Link:</p>
+        <a style={{ color: 'black', fontSize: '2em' }} href={blog.url}>
+          {blog.url}
+        </a>
+      </div>
       <div
         style={{ display: 'flex', marginBottom: '2em', alignContent: 'center' }}
       >
