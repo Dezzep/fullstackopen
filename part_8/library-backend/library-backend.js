@@ -1,5 +1,7 @@
 const { ApolloServer } = require('@apollo/server');
 const { startStandaloneServer } = require('@apollo/server/standalone');
+const { v1: uuid } = require('uuid');
+const { GraphQLError } = require('graphql');
 
 let authors = [
   {
@@ -93,11 +95,13 @@ const typeDefs = `
     author: String!
     published: Int!
     genres: [String!]!
+    id: ID!
   }
 
   type Author {
     name: String!
     born: Int
+    id: ID!
   }
 
   type Query {
@@ -105,6 +109,24 @@ const typeDefs = `
     authorCount: Int!
     allBooks(author: String, genre: String): [Book!]!
     allAuthors: [Author!]!
+  }
+
+  type Mutation {
+    addBook(
+      title: String!
+      author: String!
+      published: Int!
+      genres: [String!]!
+    ): Book
+    addAuthor(
+      name: String!
+      born: Int
+    ): Author
+    editAuthor(
+      name: String!
+      born: Int!
+    ): Author
+      
   }
 `;
 
@@ -128,6 +150,41 @@ const resolvers = {
         : books.filter((book) => book.genres.includes(args.genre));
     },
     allAuthors: () => authors,
+  },
+  Mutation: {
+    addBook: (root, args) => {
+      const book = { ...args, id: uuid() };
+      books = books.concat(book);
+
+      if (!authors.find((a) => a.name === args.author)) {
+        const author = { name: args.author, id: uuid() };
+        authors = authors.concat(author);
+        return book;
+      }
+      return book;
+    },
+    addAuthor: (root, args) => {
+      if (authors.find((a) => a.name === args.name)) {
+        throw new GraphQLError('Name must be unique', {
+          extensions: {
+            code: 'BAD_USER_INPUT',
+            invalidArgs: args.name,
+          },
+        });
+      }
+      const author = { ...args, id: uuid() };
+      authors = authors.concat(author);
+      return author;
+    },
+    editAuthor: (root, args) => {
+      const author = authors.find((a) => a.name === args.name);
+      if (!author) {
+        return null;
+      }
+      const updatedAuthor = { ...author, born: args.born };
+      authors = authors.map((a) => (a.name === args.name ? updatedAuthor : a));
+      return updatedAuthor;
+    },
   },
 };
 
