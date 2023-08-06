@@ -8,24 +8,29 @@ let authors = [
     name: 'Robert Martin',
     id: 'afa51ab0-344d-11e9-a414-719c6709cf3e',
     born: 1952,
+    bookCount: 2,
   },
   {
     name: 'Martin Fowler',
     id: 'afa5b6f0-344d-11e9-a414-719c6709cf3e',
     born: 1963,
+    bookCount: 1,
   },
   {
     name: 'Fyodor Dostoevsky',
     id: 'afa5b6f1-344d-11e9-a414-719c6709cf3e',
     born: 1821,
+    bookCount: 2,
   },
   {
     name: 'Joshua Kerievsky', // birthyear not known
     id: 'afa5b6f2-344d-11e9-a414-719c6709cf3e',
+    bookCount: 1,
   },
   {
     name: 'Sandi Metz', // birthyear not known
     id: 'afa5b6f3-344d-11e9-a414-719c6709cf3e',
+    bookCount: 1,
   },
 ];
 
@@ -101,6 +106,7 @@ const typeDefs = `
   type Author {
     name: String!
     born: Int
+    bookCount: Int!
     id: ID!
   }
 
@@ -120,6 +126,7 @@ const typeDefs = `
     ): Book
     addAuthor(
       name: String!
+      bookCount: Int!
       born: Int
     ): Author
     editAuthor(
@@ -155,12 +162,19 @@ const resolvers = {
     addBook: (root, args) => {
       const book = { ...args, id: uuid() };
       books = books.concat(book);
+      const author = authors.find((a) => a.name === args.author);
 
-      if (!authors.find((a) => a.name === args.author)) {
-        const author = { name: args.author, id: uuid() };
-        authors = authors.concat(author);
+      if (author === undefined) {
+        const a = { name: args.author, id: uuid(), bookCount: 0 };
+        authors = authors.concat(a);
         return book;
       }
+
+      authors = authors.map((a) =>
+        a.name === author.name
+          ? { ...author, bookCount: author.bookCount + 1 }
+          : a
+      );
       return book;
     },
     addAuthor: (root, args) => {
@@ -172,7 +186,7 @@ const resolvers = {
           },
         });
       }
-      const author = { ...args, id: uuid() };
+      const author = { ...args, id: uuid(), bookCount: 0 };
       authors = authors.concat(author);
       return author;
     },
