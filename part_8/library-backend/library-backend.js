@@ -168,13 +168,10 @@ const resolvers = {
         const a = { name: args.author, id: uuid(), bookCount: 0 };
         authors = authors.concat(a);
         return book;
+      } else {
+        author.bookCount++;
       }
 
-      authors = authors.map((a) =>
-        a.name === author.name
-          ? { ...author, bookCount: author.bookCount + 1 }
-          : a
-      );
       return book;
     },
     addAuthor: (root, args) => {
@@ -186,7 +183,7 @@ const resolvers = {
           },
         });
       }
-      const author = { ...args, id: uuid(), bookCount: 0 };
+      const author = { name: args.name, id: uuid(), bookCount: 0 };
       authors = authors.concat(author);
       return author;
     },
