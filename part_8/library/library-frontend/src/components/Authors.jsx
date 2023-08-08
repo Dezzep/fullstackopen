@@ -1,5 +1,5 @@
+// eslint-disable-next-line react/prop-types
 const Authors = ({ authors }) => {
-  console.log(authors);
   return (
     <div>
       <h2>Authors</h2>

@@ -3,11 +3,11 @@ import { useQuery } from '@apollo/client';
 import './App.css';
 import { ALL_AUTHORS } from './services/queries';
 import Authors from './components/Authors';
+import Books from './components/Books';
 
 function App() {
-  const result = useQuery(ALL_AUTHORS, {});
-
-  if (result.loading) {
+  const authorResult = useQuery(ALL_AUTHORS, {});
+  if (authorResult.loading) {
     return <div>loading...</div>;
   }
   return (
@@ -25,9 +25,9 @@ function App() {
       <Routes>
         <Route
           path="/"
-          element={<Authors authors={result.data.allAuthors} />}
+          element={<Authors authors={authorResult.data.allAuthors} />}
         />
-        <Route path="/books" element={<div>Books</div>} />
+        <Route path="/books" element={<Books />} />
       </Routes>
     </Router>
   );
