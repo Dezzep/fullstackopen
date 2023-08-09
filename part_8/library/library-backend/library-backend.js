@@ -165,7 +165,7 @@ const resolvers = {
       const author = authors.find((a) => a.name === args.author);
 
       if (author === undefined) {
-        const a = { name: args.author, id: uuid(), bookCount: 0 };
+        const a = { name: args.author, id: uuid(), bookCount: 1 };
         authors = authors.concat(a);
         return book;
       } else {

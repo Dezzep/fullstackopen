@@ -4,6 +4,7 @@ import './App.css';
 import { ALL_AUTHORS } from './services/queries';
 import Authors from './components/Authors';
 import Books from './components/Books';
+import AddBook from './components/AddBook';
 
 function App() {
   const authorResult = useQuery(ALL_AUTHORS, {});
@@ -21,6 +22,7 @@ function App() {
       >
         <Link to="/">Authors</Link>
         <Link to="/books">Books</Link>
+        <Link to="/add-book">Add Book</Link>
       </div>
       <Routes>
         <Route
@@ -28,6 +30,7 @@ function App() {
           element={<Authors authors={authorResult.data.allAuthors} />}
         />
         <Route path="/books" element={<Books />} />
+        <Route path="add-book" element={<AddBook />} />
       </Routes>
     </Router>
   );
